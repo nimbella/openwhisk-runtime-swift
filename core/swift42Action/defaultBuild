@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# Nimbella CONFIDENTIAL
+# ---------------------
+#
+#   2018 - present Nimbella Corp
+#   All Rights Reserved.
+#
+# NOTICE:
+#
+# All information contained herein is, and remains the property of
+# Nimbella Corp and its suppliers, if any.  The intellectual and technical
+# concepts contained herein are proprietary to Nimbella Corp and its
+# suppliers and may be covered by U.S. and Foreign Patents, patents
+# in process, and are protected by trade secret or copyright law.
+#
+# Dissemination of this information or reproduction of this material
+# is strictly forbidden unless prior written permission is obtained
+# from Nimbella Corp.
+#
+
+# This build invokes the default ActionLoop build for swift when run remotely.
+# Note that it works when (1) there is a Package.swift and Sources (the multi-file case)
+# or (2) when there is a single .swift file.  It exits with an error otherwise.
+# It is my impression that this limitation is inherent in /bin/compile for swift.
+if [ -d "Sources" ] && [ -f "Package.swift" ]; then
+  CURRENT="$PWD"
+	pushd /swiftAction
+	$OW_COMPILER main $CURRENT $CURRENT
+	popd
+  else
+	COUNT=$(ls *.swift | wc -w)
+	if [ "$COUNT" != "1" ]; then
+		echo "Conditions for use of the default action are not met"
+		exit 1
+	fi
+	cp *.swift /swiftAction/exec
+	pushd /swiftAction
+	$OW_COMPILER main . .
+	popd
+	cp /swiftAction/exec .
+fi
+echo exec > .include

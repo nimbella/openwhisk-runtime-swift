@@ -17,8 +17,8 @@
 
 # build go proxy from source
 FROM golang:1.15 AS builder_source
-ARG GO_PROXY_GITHUB_USER=apache
-ARG GO_PROXY_GITHUB_BRANCH=master
+ARG GO_PROXY_GITHUB_USER=nimbella-corp
+ARG GO_PROXY_GITHUB_BRANCH=dev
 RUN git clone --branch ${GO_PROXY_GITHUB_BRANCH} \
    https://github.com/${GO_PROXY_GITHUB_USER}/openwhisk-runtime-go /src ;\
    cd /src ; env GO111MODULE=on CGO_ENABLED=0 go build main/proxy.go && \
@@ -36,12 +36,16 @@ RUN curl -sL \
 FROM swift:5.4
 
 # select the builder to use
-ARG GO_PROXY_BUILD_FROM=release
+ARG GO_PROXY_BUILD_FROM=source
 
 RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get -qq update \
-	&& apt-get install -y --no-install-recommends locales python3 vim libssl-dev libicu-dev \
+	&& apt-get install -y --no-install-recommends locales python3 vim libssl-dev libicu-dev curl \
 	&& rm -rf /var/lib/apt/lists/* \
-	&& locale-gen en_US.UTF-8
+	&& locale-gen en_US.UTF-8 \
+	&& ln -s /usr/bin/python3 /usr/bin/python
+
+# Add nim
+RUN curl https://apigcp.nimbella.io/downloads/nim/nim-install-linux.sh | bash
 
 ENV LANG="en_US.UTF-8" \
 	LANGUAGE="en_US:en" \
@@ -55,6 +59,7 @@ COPY --from=builder_release /bin/proxy /bin/proxy_release
 RUN mv /bin/proxy_${GO_PROXY_BUILD_FROM} /bin/proxy
 ADD swiftbuild.py /bin/compile
 ADD swiftbuild.py.launcher.swift /bin/compile.launcher.swift
+ADD defaultBuild /bin/defaultBuild
 COPY _Whisk.swift /swiftAction/Sources/
 COPY Package.swift /swiftAction/
 COPY swiftbuildandlink.sh /swiftAction/
