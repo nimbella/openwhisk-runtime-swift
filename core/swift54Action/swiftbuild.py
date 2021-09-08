@@ -77,13 +77,13 @@ def build(source_dir, target_file, buildcmd):
         print(e)
         print(o)
         print(r)
-        return
+        sys.exit(1)
 
     bin_file = "%s/.build/release/Action" % source_dir
     os.rename(bin_file, target_file)
     if not os.path.isfile(target_file):
         print("failed %s -> %s" % (bin_file, target_file))
-        return
+        sys.exit(1)
 
 
 def main(argv):
