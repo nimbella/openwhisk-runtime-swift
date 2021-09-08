@@ -24,20 +24,18 @@
 # or (2) when there is a single .swift file.  It exits with an error otherwise.
 # It is my impression that this limitation is inherent in /bin/compile for swift.
 if [ -d "Sources" ] && [ -f "Package.swift" ]; then
-  CURRENT="$PWD"
-	pushd /swiftAction
-	$OW_COMPILER main $CURRENT $CURRENT
-	popd
-  else
-	COUNT=$(ls *.swift | wc -w)
-	if [ "$COUNT" != "1" ]; then
-		echo "Conditions for use of the default action are not met"
-		exit 1
-	fi
-	cp *.swift /swiftAction/exec
-	pushd /swiftAction
-	$OW_COMPILER main . .
-	popd
-	cp /swiftAction/exec .
+  cp /swiftAction/Sources/_Whisk.swift Sources
+  $OW_COMPILER main . .
+else
+  COUNT=$(ls *.swift | wc -w)
+  if [ "$COUNT" != "1" ]; then
+    echo "Conditions for use of the default action are not met"
+    exit 1
+  fi
+  cp *.swift /swiftAction/exec
+  pushd /swiftAction
+  $OW_COMPILER main . .
+  popd
+  mv /swiftAction/exec .
 fi
 echo exec > .include
