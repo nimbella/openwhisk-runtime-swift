@@ -48,6 +48,15 @@ RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get -qq update \
 ARG NIM_INSTALL_SCRIPT=https://apigcp.nimbella.io/downloads/nim/nim-install-linux.sh
 RUN curl ${NIM_INSTALL_SCRIPT} | bash
 
+# Add dynamic libraries for the Swift SDK
+ARG NIM_SDK_ORG=nimbella
+ARG NIM_SDK_BRANCH=master
+RUN cd /tmp && git clone https://github.com/${NIM_SDK_ORG}/nimbella-sdk-swift \
+    && cd nimbella-sdk-swift && git checkout ${NIM_SDK_BRANCH} \
+    && cd lib && swift build -c release \
+    && cp .build/release/*.so /usr/local/lib \
+    && cd ../.. && rm -fr nimbella-sdk-swift
+
 ENV LANG="en_US.UTF-8" \
 	LANGUAGE="en_US:en" \
 	LC_ALL="en_US.UTF-8"
