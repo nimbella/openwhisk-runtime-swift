@@ -44,7 +44,8 @@ RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get update \
 	&& locale-gen en_US.UTF-8
 
 # Add nim
-RUN curl https://apigcp.nimbella.io/downloads/nim/nim-install-linux.sh | bash
+ARG NIM_INSTALL_SCRIPT=https://apigcp.nimbella.io/downloads/nim/nim-install-linux.sh
+RUN curl ${NIM_INSTALL_SCRIPT} | bash
 
 ENV LANG="en_US.UTF-8" \
 	LANGUAGE="en_US:en" \
