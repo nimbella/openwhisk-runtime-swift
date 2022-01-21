@@ -45,6 +45,7 @@ RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get update \
 
 # Add nim
 ARG NIM_INSTALL_SCRIPT=https://apigcp.nimbella.io/downloads/nim/nim-install-linux.sh
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl ${NIM_INSTALL_SCRIPT} | bash
 
 ENV LANG="en_US.UTF-8" \
