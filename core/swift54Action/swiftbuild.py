@@ -71,19 +71,17 @@ def swift_build(dir, buildcmd):
 
 def build(source_dir, target_file, buildcmd):
     r, o, e = swift_build(source_dir, buildcmd)
-    #if e: print(e)
-    #if o: print(o)
+    if o: print(o)
     if r != 0:
-        print(e)
-        print(o)
-        print(r)
-        return
+        print("rc = %d" % r, file=sys.stderr)
+        if e: print(e, file=sys.stderr)
+        sys.exit(r)
 
     bin_file = "%s/.build/release/Action" % source_dir
     os.rename(bin_file, target_file)
     if not os.path.isfile(target_file):
         print("failed %s -> %s" % (bin_file, target_file))
-        return
+        sys.exit(1)
 
 
 def main(argv):
