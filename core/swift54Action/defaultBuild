@@ -23,6 +23,8 @@
 # Note that it works when (1) there is a Package.swift and Sources (the multi-file case)
 # or (2) when there is a single .swift file.  It exits with an error otherwise.
 # It is my impression that this limitation is inherent in /bin/compile for swift.
+set -e
+export __NIM_REMOTE_BUILD=true
 if [ -d "Sources" ] && [ -f "Package.swift" ]; then
   CURRENT="$PWD"
 	pushd /swiftAction
