@@ -71,18 +71,24 @@ def swift_build(dir, buildcmd):
 
 def build(source_dir, target_file, buildcmd):
     r, o, e = swift_build(source_dir, buildcmd)
-    if o: print(o)
-    if r != 0:
-        print("rc = %d" % r, file=sys.stderr)
+    if os.environ.get("__NIM_REMOTE_BUILD")
+        if o: print(o)
         if e: print(e, file=sys.stderr)
-        sys.exit(r)
-
+        if r != 0:
+            print("rc = %d" % r, file=sys.stderr)
+            sys.exit(r)
+    else:
+        if r != 0:
+            print(e)
+            print(o)
+            print(r)
+            return
+    
     bin_file = "%s/.build/release/Action" % source_dir
     os.rename(bin_file, target_file)
     if not os.path.isfile(target_file):
         print("failed %s -> %s" % (bin_file, target_file))
         sys.exit(1)
-
 
 def main(argv):
     if len(argv) < 4:
