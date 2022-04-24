@@ -24,13 +24,14 @@
 # or (2) when there is a single .swift file.  It exits with an error otherwise.
 # It is my impression that this limitation is inherent in /bin/compile for swift.
 set -e
+MAIN=${1:-main}
 export __NIM_REMOTE_BUILD=true
 if [ -d "Sources" ] && [ -f "Package.swift" ]; then
   CURRENT="$PWD"
 	pushd /swiftAction
-	$OW_COMPILER main $CURRENT $CURRENT
+	$OW_COMPILER $MAIN $CURRENT $CURRENT
 	popd
-  else
+else
 	COUNT=$(ls *.swift | wc -w)
 	if [ "$COUNT" != "1" ]; then
 		echo "Conditions for use of the default action are not met"
@@ -38,7 +39,7 @@ if [ -d "Sources" ] && [ -f "Package.swift" ]; then
 	fi
 	cp *.swift /swiftAction/exec
 	pushd /swiftAction
-	$OW_COMPILER main . .
+	$OW_COMPILER $MAIN . .
 	popd
 	cp /swiftAction/exec .
 fi
